@@ -10,10 +10,24 @@ import time
 import logging
 from lerobot.cameras.camera import Camera
 from lerobot.utils.errors import DeviceAlreadyConnectedError, DeviceNotConnectedError
-from lerobot.utils import get_cv2_rotation
 from .configuration_zmq import ZMQCameraConfig, ColorMode
+from lerobot.cameras.configs import Cv2Rotation
 
 logger = logging.getLogger(__name__)
+
+
+def get_cv2_rotation(rotation: Cv2Rotation) -> Optional[int]:
+    """Convert Cv2Rotation enum to cv2 rotation constant."""
+    if rotation == Cv2Rotation.NO_ROTATION:
+        return None
+    elif rotation == Cv2Rotation.ROTATE_90:
+        return cv2.ROTATE_90_CLOCKWISE
+    elif rotation == Cv2Rotation.ROTATE_180:
+        return cv2.ROTATE_180
+    elif rotation == Cv2Rotation.ROTATE_270:
+        return cv2.ROTATE_90_COUNTERCLOCKWISE
+    else:
+        raise ValueError(f"Invalid rotation: {rotation}")
 
 class ZMQCamera(Camera):
     def __init__(self, config: ZMQCameraConfig):
@@ -37,11 +51,12 @@ class ZMQCamera(Camera):
         self.latest_frame: NDArray[Any] | None = None
         self.new_frame_event: Event = Event()
         self.rotation: int | None = get_cv2_rotation(config.rotation)
-
-        if self.height and self.width:
-            self.capture_width, self.capture_height = self.width, self.height
-            if self.rotation in [cv2.ROTATE_90_CLOCKWISE, cv2.ROTATE_90_COUNTERCLOCKWISE]:
-                self.capture_width, self.capture_height = self.height, self.width
+        if config.width is None or config.height is None:
+            self.width = None
+            self.height = None
+        else:
+            self.width = config.width
+            self.height = config.height
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}({self.tcp_address}, {self.topic})"
@@ -126,6 +141,7 @@ class ZMQCamera(Camera):
             )
             if frame is None:
                 raise RuntimeError("Failed to decode JPEG frame")
+            shape = frame.shape
         else:
             # Raw encoding - assume RGB format from data
             shape = data["shape"]
@@ -134,6 +150,11 @@ class ZMQCamera(Camera):
             rgb_frame = rgb_flat.reshape(shape)
             # Convert RGB to BGR for consistent processing
             frame = cv2.cvtColor(rgb_frame, cv2.COLOR_RGB2BGR)
+        
+        # Set the width and height
+        if self.width is None or self.height is None:
+            self.width = shape[1]
+            self.height = shape[0]
 
         return frame
 
@@ -163,9 +184,9 @@ class ZMQCamera(Camera):
 
         h, w, c = image.shape
 
-        if h != self.capture_height or w != self.capture_width:
+        if h != self.height or w != self.width:
             raise RuntimeError(
-                f"{self} frame width={w} or height={h} do not match configured width={self.capture_width} or height={self.capture_height}."
+                f"{self} frame width={w} or height={h} do not match configured width={self.width} or height={self.height}."
             )
 
         if c != 3:

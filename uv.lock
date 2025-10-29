@@ -906,7 +906,7 @@ wheels = [
 [[package]]
 name = "lerobot-ur5e-gello"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "lerobot" },
     { name = "pyzmq" },
