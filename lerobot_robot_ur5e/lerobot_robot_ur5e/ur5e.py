@@ -6,50 +6,8 @@ from lerobot.robots import RobotConfig, Robot
 from lerobot.utils.errors import DeviceNotConnectedError
 import rtde_control
 import rtde_receive
-from cameras.configuration_zmq import ZMQCameraConfig
-from third_party.robotiq_gripper import RobotiqGripper
-
-
-@RobotConfig.register_subclass("ur5e")
-@dataclass
-class UR5EConfig(RobotConfig):
-    ip: str
-    cameras: dict[str, CameraConfig] = field(
-        default_factory={
-            "zed2i_left": ZMQCameraConfig(
-                tcp_address=f"tcp://192.168.1.12:5555",
-                topic="zed2i_left",
-                color_mode=ColorMode.RGB,
-                rotation=Cv2Rotation.NO_ROTATION,
-                width=672,
-                height=376
-            ),
-            "zed2i_right": ZMQCameraConfig(
-                tcp_address=f"tcp://192.168.1.12:5555",
-                topic="zed2i_right",
-                color_mode=ColorMode.RGB,
-                rotation=Cv2Rotation.NO_ROTATION,
-                width=672,
-                height=376
-            ),
-            "zedm_left": ZMQCameraConfig(
-                tcp_address=f"tcp://192.168.1.12:5555",
-                topic="zedm_left",
-                color_mode=ColorMode.RGB,
-                rotation=Cv2Rotation.NO_ROTATION,
-                width=672,
-                height=376
-            ),
-            "zedm_right": ZMQCameraConfig(
-                tcp_address=f"tcp://192.168.1.12:5555",
-                topic="zedm_right",
-                color_mode=ColorMode.RGB,
-                rotation=Cv2Rotation.NO_ROTATION,
-                width=672,
-                height=376
-            )
-        }
-    )
+from .robotiq_gripper import RobotiqGripper
+from .config_ur5e import UR5EConfig
 
 class UR5E(Robot):
     config_class = UR5EConfig
