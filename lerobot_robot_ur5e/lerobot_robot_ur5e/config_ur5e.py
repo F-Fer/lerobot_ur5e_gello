@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from lerobot.cameras.configs import ColorMode, Cv2Rotation
 from lerobot.cameras import CameraConfig
 from lerobot.robots import RobotConfig
-from lerobot_camera_zmq.lerobot_camera_zmq.config_zmq import ZMQCameraConfig
+from lerobot_camera_zmq import ZMQCameraConfig
 
 @RobotConfig.register_subclass("ur5e")
 @dataclass

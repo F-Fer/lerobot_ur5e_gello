@@ -1,18 +1,14 @@
 [project]
-name = "lerobot-ur5e-gello"
+name = "lerobot-ur5e-gello-dev-env"
 version = "0.1.0"
-description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = [
-    "lerobot>=0.4.0",
-    "pyzmq>=27.1.0",
-    "ur-rtde>=1.6.2",
+
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+    "black",
 ]
-
-[build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools.packages.find]
-where = ["src"]
