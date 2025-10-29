@@ -7,6 +7,7 @@ requires-python = ">=3.11"
 dependencies = [
     "lerobot>=0.4.0",
     "pyzmq>=27.1.0",
+    "ur-rtde>=1.6.2",
 ]
 
 [build-system]
