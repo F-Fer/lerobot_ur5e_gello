@@ -5,14 +5,12 @@ import numpy as np
 from dataclasses import dataclass
 from lerobot.motors import Motor, MotorCalibration, MotorNormMode
 from lerobot.motors.dynamixel import (
-    DriveMode,
     DynamixelMotorsBus,
     OperatingMode,
 )
 from lerobot.teleoperators import Teleoperator
 from lerobot.utils.errors import DeviceAlreadyConnectedError, DeviceNotConnectedError
 from .config_gello import GelloConfig
-from lerobot.cameras import make_cameras_from_configs
 from pathlib import Path
 logger = logging.getLogger(__name__)
 

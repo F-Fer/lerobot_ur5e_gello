@@ -1,12 +1,16 @@
 [project]
-name = "lerobot-teleoperator-gello"
+name = "lerobot_teleoperator_gello"
 version = "0.1.0"
 description = "A lerobot plugin for the ur5 gello teleop device from Phillip Wu."
 requires-python = ">=3.11"
 
 dependencies = [
     "lerobot>=0.4.0",
+    "dynamixel-sdk>=3.8",
 ]
+
+[tool.setuptools]
+packages = ["lerobot_teleoperator_gello"]
 
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]

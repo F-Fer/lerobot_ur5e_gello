@@ -6,6 +6,13 @@ requires-python = ">=3.11"
 
 dependencies = []
 
+[tool.setuptools.packages.find]
+include = [
+    "lerobot_camera_zmq",
+    "lerobot_robot_ur5e",
+    "lerobot_teleoperator_gello",
+]
+
 [project.optional-dependencies]
 dev = [
     "pytest",
