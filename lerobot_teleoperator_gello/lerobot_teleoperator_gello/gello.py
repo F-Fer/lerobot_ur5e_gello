@@ -99,7 +99,7 @@ class Gello(Teleoperator):
         calibration = GelloCalibration(
             joint_offsets={motor: start_joints[motor] for motor in joint_motors},
             gripper_open_position=start_joints["gripper"],
-            gripper_closed_position=start_joints["gripper"] + self.config.gripper_travel_counts,
+            gripper_closed_position=start_joints["gripper"] - self.config.gripper_travel_counts,
         )
         self.calibration = calibration
         # Save calibration to file

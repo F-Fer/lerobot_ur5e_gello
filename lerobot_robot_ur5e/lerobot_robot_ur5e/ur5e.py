@@ -8,6 +8,7 @@ import rtde_control
 import rtde_receive
 from .robotiq_gripper import RobotiqGripper
 from .config_ur5e import UR5EConfig
+import numpy as np
 
 class UR5E(Robot):
     config_class = UR5EConfig
@@ -42,7 +43,7 @@ class UR5E(Robot):
         self.with_gripper = True
         self.gripper = RobotiqGripper()
         self.gripper_speed = 255
-        self.gripper_force = 255
+        self.gripper_force = 10
 
     @property
     def _motors_ft(self) -> dict[str, type]:
@@ -137,7 +138,7 @@ class UR5E(Robot):
             raise ValueError(f"Invalid action: {action}, features: {self.action_features()}")
 
         goal_joint_positions = [action[f"joint_{i}"] for i in range(6)]
-        goal_gripper_position = action["gripper"] * 255.0 # Denormalize to [0, 255]
+        goal_gripper_position = np.clip(action["gripper"] * 255.0, 0, 255) # Denormalize to [0, 255]
 
         # Send goal position to the arm
         self.rtde_ctrl.servoJ(

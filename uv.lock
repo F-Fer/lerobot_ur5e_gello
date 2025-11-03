@@ -970,7 +970,7 @@ requires-dist = [
 
 [[package]]
 name = "lerobot-robot-ur5e"
-version = "0.1.0"
+version = "0.1.2"
 source = { directory = "lerobot_robot_ur5e" }
 dependencies = [
     { name = "lerobot" },
@@ -985,7 +985,7 @@ requires-dist = [
 
 [[package]]
 name = "lerobot-teleoperator-gello"
-version = "0.1.0"
+version = "0.1.1"
 source = { directory = "lerobot_teleoperator_gello" }
 dependencies = [
     { name = "dynamixel-sdk" },
