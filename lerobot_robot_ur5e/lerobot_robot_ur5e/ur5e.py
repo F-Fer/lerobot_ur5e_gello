@@ -67,6 +67,7 @@ class UR5E(Robot):
     def observation_features(self) -> dict:
         return {**self._motors_ft, **self._cameras_ft}
 
+    @property
     def action_features(self) -> dict:
         return self._motors_ft
 
@@ -134,8 +135,8 @@ class UR5E(Robot):
 
     def send_action(self, action: dict[str, float]) -> dict[str, float]:
         # Check if action is valid
-        if not all(key in self.action_features() for key in action.keys()):
-            raise ValueError(f"Invalid action: {action}, features: {self.action_features()}")
+        if not all(key in self.action_features for key in action.keys()):
+            raise ValueError(f"Invalid action: {action}, features: {self.action_features}")
 
         goal_joint_positions = [action[f"joint_{i}"] for i in range(6)]
         goal_gripper_position = np.clip(action["gripper"] * 255.0, 0, 255) # Denormalize to [0, 255]

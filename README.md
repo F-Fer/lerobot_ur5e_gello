@@ -20,4 +20,20 @@ uv run lerobot-find-port
 uv run scripts/calibrate_gello_teleop.py --port /dev/ttyUSB0 --id gello_teleop
 ```
 
+## Record Dataset
+
+```bash
+uv run scripts/record.py \
+    --robot.type=ur5e \
+    --robot.ip=192.168.1.10 \
+    --dataset.repo_id=F-Fer/ur5e_gello_test_1 \
+    --dataset.num_episodes=2 \
+    --dataset.single_task="Test..." \
+    --dataset.push_to_hub=True \
+    --display_data=true \
+    --teleop.type=gello \
+    --teleop.port=/dev/ttyUSB0 \
+    --teleop.id=gello_teleop
+```
+
 
