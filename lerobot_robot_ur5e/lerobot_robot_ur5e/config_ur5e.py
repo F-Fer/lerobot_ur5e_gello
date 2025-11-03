@@ -9,38 +9,42 @@ from lerobot_camera_zmq import ZMQCameraConfig
 class UR5EConfig(RobotConfig):
     ip: str
     cameras: dict[str, CameraConfig] = field(
-        default_factory={
+        default_factory=lambda: {
             "zed2i_left": ZMQCameraConfig(
-                tcp_address=f"tcp://192.168.1.12:5555",
+                tcp_address="tcp://192.168.1.12:5555",
                 topic="zed2i_left",
+                fps=30,
+                width=672,
+                height=376,
                 color_mode=ColorMode.RGB,
                 rotation=Cv2Rotation.NO_ROTATION,
-                width=672,
-                height=376
             ),
             "zed2i_right": ZMQCameraConfig(
-                tcp_address=f"tcp://192.168.1.12:5555",
+                tcp_address="tcp://192.168.1.12:5555",
                 topic="zed2i_right",
+                fps=30,
                 color_mode=ColorMode.RGB,
                 rotation=Cv2Rotation.NO_ROTATION,
                 width=672,
-                height=376
+                height=376,
             ),
             "zedm_left": ZMQCameraConfig(
-                tcp_address=f"tcp://192.168.1.12:5555",
+                tcp_address="tcp://192.168.1.12:5555",
                 topic="zedm_left",
+                fps=30,
                 color_mode=ColorMode.RGB,
                 rotation=Cv2Rotation.NO_ROTATION,
                 width=672,
-                height=376
+                height=376,
             ),
             "zedm_right": ZMQCameraConfig(
-                tcp_address=f"tcp://192.168.1.12:5555",
+                tcp_address="tcp://192.168.1.12:5555",
                 topic="zedm_right",
+                fps=30,
                 color_mode=ColorMode.RGB,
                 rotation=Cv2Rotation.NO_ROTATION,
                 width=672,
-                height=376
-            )
+                height=376,
+            ),
         }
     )

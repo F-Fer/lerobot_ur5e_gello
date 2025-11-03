@@ -71,7 +71,13 @@ class UR5E(Robot):
 
     @property
     def is_connected(self) -> bool:
-        return self.rtde_ctrl.isConnected() and self.rtde_rec.isConnected() and all(cam.is_connected for cam in self.cameras.values())
+        return (
+            self.rtde_ctrl is not None
+            and self.rtde_rec is not None
+            and self.rtde_ctrl.isConnected()
+            and self.rtde_rec.isConnected()
+            and all(cam.is_connected for cam in self.cameras.values())
+        )
 
     def connect(self, calibrate: bool = True) -> None:
         if self.is_connected:

@@ -4,7 +4,12 @@ version = "0.1.0"
 readme = "README.md"
 requires-python = ">=3.11"
 
-dependencies = []
+dependencies = [
+    "lerobot>=0.4.0",
+    "lerobot-camera-zmq",
+    "lerobot-robot-ur5e",
+    "lerobot-teleoperator-gello",
+]
 
 [tool.setuptools.packages.find]
 include = [
@@ -19,3 +24,8 @@ dev = [
     "ruff",
     "black",
 ]
+
+[tool.uv.sources]
+lerobot-camera-zmq = { path = "lerobot_camera_zmq" }
+lerobot-robot-ur5e = { path = "lerobot_robot_ur5e" }
+lerobot-teleoperator-gello = { path = "lerobot_teleoperator_gello" }

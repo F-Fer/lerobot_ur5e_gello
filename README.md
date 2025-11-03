@@ -4,6 +4,10 @@
 uv pip install lerobot -e ./lerobot_camera_zmq -e ./lerobot_robot_ur5e -e ./lerobot_teleoperator_gello
 ```
 
+```bash
+uv run --refresh python -m pip install lerobot -e ./lerobot_camera_zmq -e ./lerobot_robot_ur5e -e ./lerobot_teleoperator_gello
+```
+
 ## Calibrate GELLO Teleop
 
 1. Find Port
@@ -15,3 +19,5 @@ uv run lerobot-find-port
 ```bash
 uv run scripts/calibrate_gello_teleop.py --port /dev/ttyUSB0 --id gello_teleop
 ```
+
+

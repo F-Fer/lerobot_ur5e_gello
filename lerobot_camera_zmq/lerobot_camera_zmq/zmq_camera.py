@@ -10,8 +10,8 @@ import time
 import logging
 from lerobot.cameras.camera import Camera
 from lerobot.utils.errors import DeviceAlreadyConnectedError, DeviceNotConnectedError
-from .configuration_zmq import ZMQCameraConfig, ColorMode
-from lerobot.cameras.configs import Cv2Rotation
+from .config_zmq_camera import ZMQCameraConfig
+from lerobot.cameras.configs import ColorMode, Cv2Rotation
 
 logger = logging.getLogger(__name__)
 
