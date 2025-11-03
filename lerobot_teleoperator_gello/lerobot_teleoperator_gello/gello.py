@@ -2,6 +2,7 @@ import logging
 import json
 import time
 import numpy as np
+from dataclasses import dataclass
 from lerobot.motors import Motor, MotorCalibration, MotorNormMode
 from lerobot.motors.dynamixel import (
     DriveMode,
@@ -11,18 +12,26 @@ from lerobot.motors.dynamixel import (
 from lerobot.teleoperators import Teleoperator
 from lerobot.utils.errors import DeviceAlreadyConnectedError, DeviceNotConnectedError
 from .config_gello import GelloConfig
-
+from lerobot.cameras import make_cameras_from_configs
+from pathlib import Path
 logger = logging.getLogger(__name__)
+
+@dataclass
+class GelloCalibration:
+    joint_offsets: dict[str, float] # map from motor name to offset in radians
+    gripper_open_position: int # motor counts for the open position
+    gripper_closed_position: int # motor counts for the closed position
 
 class Gello(Teleoperator):
     """
-    This is the Gello teleoperator for the ur5 robot.
+    This is the GELLO teleoperator for the ur5 robot.
     The hardware is from Phillip Wu: https://wuphilipp.github.io/gello_site/
     """
 
     config_class = GelloConfig
     name = "gello"
     CALIBRATION_POSITION = np.array([0, -1.57, 1.57, -1.57, -1.57, -1.57]) # Should be the same as UR5e 
+    JOINT_SIGNS = np.array([1, 1, -1, 1, 1, 1])
     RAD_PER_COUNT = 2 * np.pi / (4096 - 1)
 
     def __init__(self, config: GelloConfig):
@@ -39,8 +48,7 @@ class Gello(Teleoperator):
                 "wrist_2": Motor(5, "xl330-m288", MotorNormMode.RANGE_M100_100),
                 "wrist_3": Motor(6, "xl330-m288", MotorNormMode.RANGE_M100_100),
                 "gripper": Motor(7, "xl330-m077", MotorNormMode.RANGE_0_100),
-            },
-            calibration=self.calibration,
+            }
         )
 
     @property
@@ -60,7 +68,7 @@ class Gello(Teleoperator):
             raise DeviceAlreadyConnectedError(f"{self} already connected")
 
         self.bus.connect()
-        self._load_zero_counts()
+        self._load_calibration()
         if not self.is_calibrated and calibrate:
             logger.info(
                 "Mismatch between calibration values in the motor and the calibration file or no calibration file found"
@@ -72,64 +80,32 @@ class Gello(Teleoperator):
 
     @property
     def is_calibrated(self) -> bool:
-        return self.bus.is_calibrated and self.zero_counts is not None
+        return self.calibration is not None
 
     def calibrate(self) -> None:
         self.bus.disable_torque()
         if self.calibration:
-            # Calibration file exists, ask user whether to use it or run new calibration
+            # Calibration exists exists, ask user whether to use it or run new calibration
             user_input = input(
-                f"Press ENTER to use provided calibration file associated with the id {self.id}, or type 'c' and press ENTER to run calibration: "
+                f"Press ENTER to use existing calibration, or type 'c' and press ENTER to run new calibration: "
             )
             if user_input.strip().lower() != "c":
-                logger.info(f"Writing calibration file associated with the id {self.id} to the motors")
-                self.bus.write_calibration(self.calibration)
+                logger.info(f"Using existing calibration")
                 return
         logger.info(f"\nRunning calibration of {self}")
-        for motor in self.bus.motors:
-            self.bus.write("Operating_Mode", motor, OperatingMode.EXTENDED_POSITION.value)
 
-        input(f"Move {self} to the middle of its range of motion and press ENTER....")
-        homing_offsets = self.bus.set_half_turn_homings()
-        present_counts = self.bus.sync_read("Present_Position", normalize=False)
+        input(f"Move {self} to the home position and press ENTER....")
         joint_motors = ["base", "shoulder", "elbow", "wrist_1", "wrist_2", "wrist_3"]
-        self.zero_counts = {motor: present_counts[motor] for motor in joint_motors}
-
-        # Save zero counts as json file
-        zero_counts_file = self.calibration_dir / f"{self.id}_zero_counts.json"
-        with open(zero_counts_file, "w") as f:
-            json.dump(self.zero_counts, f, indent=4)
-        logger.info(f"Zero counts saved to {zero_counts_file}")
-
-        # Full turn motors calibration
-        with self.bus.torque_disabled():
-            range_mins, range_maxes = self.bus.record_ranges_of_motion(
-                joint_motors,
-                normalize=False,
-            )
-
-            input(f"Move the gripper to the open position and press ENTER....")
-            gripper_open_pos = self.bus.read("Present_Position", "gripper", normalize=False)
-            input(f"Move the gripper to the closed position and press ENTER....")
-            gripper_closed_pos = self.bus.read("Present_Position", "gripper", normalize=False)
-            range_mins["gripper"] = gripper_closed_pos
-            range_maxes["gripper"] = gripper_open_pos
-
-        # Drive modes ()
-        drive_modes = {motor: 0 for motor in self.bus.motors}
-
-        self.calibration = {}
-        for motor, m in self.bus.motors.items():
-            self.calibration[motor] = MotorCalibration(
-                id=m.id,
-                drive_mode=drive_modes[motor],
-                homing_offset=homing_offsets[motor],
-                range_min=range_mins[motor],
-                range_max=range_maxes[motor],
-            )
-
-        self.bus.write_calibration(self.calibration)
-        self._save_calibration()
+        start_joints = self.bus.sync_read("Present_Position", normalize=False)
+        calibration = GelloCalibration(
+            joint_offsets={motor: start_joints[motor] for motor in joint_motors},
+            gripper_open_position=start_joints["gripper"],
+            gripper_closed_position=start_joints["gripper"] + 575, # gripper travel is 575 counts
+        )
+        self.calibration = calibration
+        # Save calibration to file
+        with open(self.calibration_fpath, "w") as f:
+            json.dump(calibration.__dict__, f)
         logger.info(f"Calibration saved to {self.calibration_fpath}")
 
     def configure(self) -> None:
@@ -167,11 +143,12 @@ class Gello(Teleoperator):
         joint_motors = ["base", "shoulder", "elbow", "wrist_1", "wrist_2", "wrist_3"]
         result = {}
         for idx, motor in enumerate(joint_motors):
-            zero = self.zero_counts[motor]
-            result[f"{motor}.pos"] = (
-                (action[motor] - zero) * self.RAD_PER_COUNT + self.CALIBRATION_POSITION[idx]
-            )
-        result["gripper.pos"] = (action["gripper"] - self.calibration["gripper"].range_min) / (self.calibration["gripper"].range_max - self.calibration["gripper"].range_min)
+            offset = self.calibration.joint_offsets[motor]
+            sign = self.JOINT_SIGNS[idx]
+            ref_pos_rad = self.CALIBRATION_POSITION[idx]
+            angle_rad = sign * (action[motor] - offset) * self.RAD_PER_COUNT + ref_pos_rad
+            result[f"{motor}.pos"] = angle_rad
+        result["gripper.pos"] = (action["gripper"] - self.calibration.gripper_open_position) / (self.calibration.gripper_closed_position - self.calibration.gripper_open_position)
 
         dt_ms = (time.perf_counter() - start) * 1e3
         logger.debug(f"{self} read action: {dt_ms:.1f}ms")
@@ -188,12 +165,13 @@ class Gello(Teleoperator):
         self.bus.disconnect()
         logger.info(f"{self} disconnected.")
 
-    def _load_zero_counts(self) -> None:
-        zero_counts_file = self.calibration_dir / f"{self.id}_zero_counts.json"
-        if zero_counts_file.is_file():
-            with open(zero_counts_file, "r") as f:
-                self.zero_counts = json.load(f)
-            logger.info(f"Zero counts loaded from {zero_counts_file}")
+    def _load_calibration(self, fpath: Path | None = None) -> None:
+        if fpath is None:
+            fpath = self.calibration_fpath
+        if fpath.is_file():
+            with open(fpath, "r") as f:
+                self.calibration = GelloCalibration(**json.load(f))
+            logger.info(f"Calibration loaded from {fpath}")
         else:
-            logger.info(f"No zero counts file found at {zero_counts_file}")
-            self.zero_counts = None
+            logger.info(f"No calibration file found at {fpath}")
+            self.calibration = None
