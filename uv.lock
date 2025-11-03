@@ -956,7 +956,7 @@ wheels = [
 [[package]]
 name = "lerobot-camera-zmq"
 version = "0.1.0"
-source = { directory = "lerobot_camera_zmq" }
+source = { editable = "lerobot_camera_zmq" }
 dependencies = [
     { name = "lerobot" },
     { name = "pyzmq" },
@@ -970,8 +970,8 @@ requires-dist = [
 
 [[package]]
 name = "lerobot-robot-ur5e"
-version = "0.1.2"
-source = { directory = "lerobot_robot_ur5e" }
+version = "0.1.0"
+source = { editable = "lerobot_robot_ur5e" }
 dependencies = [
     { name = "lerobot" },
     { name = "ur-rtde" },
@@ -985,8 +985,8 @@ requires-dist = [
 
 [[package]]
 name = "lerobot-teleoperator-gello"
-version = "0.1.1"
-source = { directory = "lerobot_teleoperator_gello" }
+version = "0.1.0"
+source = { editable = "lerobot_teleoperator_gello" }
 dependencies = [
     { name = "dynamixel-sdk" },
     { name = "lerobot" },
@@ -1020,9 +1020,9 @@ dev = [
 requires-dist = [
     { name = "black", marker = "extra == 'dev'" },
     { name = "lerobot", specifier = ">=0.4.0" },
-    { name = "lerobot-camera-zmq", directory = "lerobot_camera_zmq" },
-    { name = "lerobot-robot-ur5e", directory = "lerobot_robot_ur5e" },
-    { name = "lerobot-teleoperator-gello", directory = "lerobot_teleoperator_gello" },
+    { name = "lerobot-camera-zmq", editable = "lerobot_camera_zmq" },
+    { name = "lerobot-robot-ur5e", editable = "lerobot_robot_ur5e" },
+    { name = "lerobot-teleoperator-gello", editable = "lerobot_teleoperator_gello" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "ruff", marker = "extra == 'dev'" },
 ]

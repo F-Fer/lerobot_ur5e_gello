@@ -26,6 +26,6 @@ dev = [
 ]
 
 [tool.uv.sources]
-lerobot-camera-zmq = { path = "lerobot_camera_zmq" }
-lerobot-robot-ur5e = { path = "lerobot_robot_ur5e" }
-lerobot-teleoperator-gello = { path = "lerobot_teleoperator_gello" }
+lerobot-camera-zmq = { path = "lerobot_camera_zmq", editable = true }
+lerobot-robot-ur5e = { path = "lerobot_robot_ur5e", editable = true }
+lerobot-teleoperator-gello = { path = "lerobot_teleoperator_gello", editable = true }
