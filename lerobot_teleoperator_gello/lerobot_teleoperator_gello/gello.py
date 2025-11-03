@@ -63,7 +63,10 @@ class Gello(Teleoperator):
         if self.is_connected:
             raise DeviceAlreadyConnectedError(f"{self} already connected")
 
-        self.bus.connect()
+        self.bus.connect(handshake=False)
+        self.bus.set_baudrate(self.config.baudrate)
+        self.bus._handshake()
+        self.bus._assert_motors_exist()
         self._load_calibration()
         if not self.is_calibrated and calibrate:
             logger.info(
