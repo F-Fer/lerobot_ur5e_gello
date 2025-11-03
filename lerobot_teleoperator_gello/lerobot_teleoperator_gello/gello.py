@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class GelloCalibration:
-    joint_offsets: dict[str, float] # map from motor name to offset in radians
+    joint_offsets: dict[str, int] # map from motor name to offset in counts
     gripper_open_position: int # motor counts for the open position
     gripper_closed_position: int # motor counts for the closed position
 
@@ -30,14 +30,12 @@ class Gello(Teleoperator):
 
     config_class = GelloConfig
     name = "gello"
-    CALIBRATION_POSITION = np.array([0, -1.57, 1.57, -1.57, -1.57, -1.57]) # Should be the same as UR5e 
-    JOINT_SIGNS = np.array([1, 1, -1, 1, 1, 1])
     RAD_PER_COUNT = 2 * np.pi / (4096 - 1)
 
     def __init__(self, config: GelloConfig):
         super().__init__(config)
         self.config = config
-        self.zero_counts: dict[str, int] | None = None
+        self.calibration = None
         self.bus = DynamixelMotorsBus(
             port=self.config.port,
             motors={
@@ -100,7 +98,7 @@ class Gello(Teleoperator):
         calibration = GelloCalibration(
             joint_offsets={motor: start_joints[motor] for motor in joint_motors},
             gripper_open_position=start_joints["gripper"],
-            gripper_closed_position=start_joints["gripper"] + 575, # gripper travel is 575 counts
+            gripper_closed_position=start_joints["gripper"] + self.config.gripper_travel_counts,
         )
         self.calibration = calibration
         # Save calibration to file
@@ -144,8 +142,8 @@ class Gello(Teleoperator):
         result = {}
         for idx, motor in enumerate(joint_motors):
             offset = self.calibration.joint_offsets[motor]
-            sign = self.JOINT_SIGNS[idx]
-            ref_pos_rad = self.CALIBRATION_POSITION[idx]
+            sign = self.config.joint_signs[idx]
+            ref_pos_rad = self.config.calibration_position[idx]
             angle_rad = sign * (action[motor] - offset) * self.RAD_PER_COUNT + ref_pos_rad
             result[f"{motor}.pos"] = angle_rad
         result["gripper.pos"] = (action["gripper"] - self.calibration.gripper_open_position) / (self.calibration.gripper_closed_position - self.calibration.gripper_open_position)

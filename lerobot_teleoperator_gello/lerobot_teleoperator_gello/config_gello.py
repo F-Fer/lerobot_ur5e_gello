@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from lerobot.teleoperators.config import TeleoperatorConfig
 
@@ -7,3 +7,6 @@ from lerobot.teleoperators.config import TeleoperatorConfig
 class GelloConfig(TeleoperatorConfig):
     # Port to connect to the arm
     port: str
+    calibration_position: list[float] = field(default_factory=lambda: [0, -1.57, 1.57, -1.57, -1.57, -1.57])
+    joint_signs: list[int] = field(default_factory=lambda: [1, 1, -1, 1, 1, 1])
+    gripper_travel_counts: int = 575
