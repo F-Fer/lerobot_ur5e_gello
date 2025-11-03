@@ -47,12 +47,12 @@ class UR5E(Robot):
     @property
     def _motors_ft(self) -> dict[str, type]:
         return {
-            "motor_1": float,
-            "motor_2": float,
-            "motor_3": float,
-            "motor_4": float,
-            "motor_5": float,
-            "motor_6": float,
+            "joint_0": float,
+            "joint_1": float,
+            "joint_2": float,
+            "joint_3": float,
+            "joint_4": float,
+            "joint_5": float,
             "gripper": float,
         }
 
@@ -120,9 +120,9 @@ class UR5E(Robot):
             raise DeviceNotConnectedError(f"{self} is not connected.")
 
         # Read arm position
-        joint_positions = self.rtde_rec.get_actual_Q()
+        joint_positions = self.rtde_rec.getActualQ()
         gripper_position = self.gripper.get_current_position() / 255.0 # Normalize to [0, 1]
-        obs_dict = {f"motor_{i}": val for i, val in enumerate(joint_positions)}
+        obs_dict = {f"joint_{i}": val for i, val in enumerate(joint_positions)}
         obs_dict["gripper"] = gripper_position
 
         # Capture images from cameras
@@ -134,9 +134,9 @@ class UR5E(Robot):
     def send_action(self, action: dict[str, float]) -> dict[str, float]:
         # Check if action is valid
         if not all(key in self.action_features() for key in action.keys()):
-            raise ValueError(f"Invalid action: {action}")
+            raise ValueError(f"Invalid action: {action}, features: {self.action_features()}")
 
-        goal_joint_positions = [action[f"motor_{i}"] for i in range(6)]
+        goal_joint_positions = [action[f"joint_{i}"] for i in range(6)]
         goal_gripper_position = action["gripper"] * 255.0 # Denormalize to [0, 255]
 
         # Send goal position to the arm
