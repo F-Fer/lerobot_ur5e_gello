@@ -37,19 +37,19 @@ class Gello(Teleoperator):
         self.bus = DynamixelMotorsBus(
             port=self.config.port,
             motors={
-                "base": Motor(1, "xl330-m288", MotorNormMode.RANGE_M100_100),
-                "shoulder": Motor(2, "xl330-m288", MotorNormMode.RANGE_M100_100),
-                "elbow": Motor(3, "xl330-m288", MotorNormMode.RANGE_M100_100),
-                "wrist_1": Motor(4, "xl330-m288", MotorNormMode.RANGE_M100_100),
-                "wrist_2": Motor(5, "xl330-m288", MotorNormMode.RANGE_M100_100),
-                "wrist_3": Motor(6, "xl330-m288", MotorNormMode.RANGE_M100_100),
+                "joint_0": Motor(1, "xl330-m288", MotorNormMode.RANGE_M100_100),
+                "joint_1": Motor(2, "xl330-m288", MotorNormMode.RANGE_M100_100),
+                "joint_2": Motor(3, "xl330-m288", MotorNormMode.RANGE_M100_100),
+                "joint_3": Motor(4, "xl330-m288", MotorNormMode.RANGE_M100_100),
+                "joint_4": Motor(5, "xl330-m288", MotorNormMode.RANGE_M100_100),
+                "joint_5": Motor(6, "xl330-m288", MotorNormMode.RANGE_M100_100),
                 "gripper": Motor(7, "xl330-m077", MotorNormMode.RANGE_0_100),
             }
         )
 
     @property
     def action_features(self) -> dict[str, type]:
-        return {f"{motor}.pos": float for motor in self.bus.motors}
+        return {motor: float for motor in self.bus.motors}
 
     @property
     def feedback_features(self) -> dict[str, type]:
@@ -139,15 +139,15 @@ class Gello(Teleoperator):
         action = self.bus.sync_read("Present_Position", normalize=False)
 
         # Normalize joint positions to [-pi, pi] and gripper position to [0, 1]
-        joint_motors = ["base", "shoulder", "elbow", "wrist_1", "wrist_2", "wrist_3"]
+        joint_motors = ["joint_0", "joint_1", "joint_2", "joint_3", "joint_4", "joint_5"]
         result = {}
         for idx, motor in enumerate(joint_motors):
             offset = self.calibration.joint_offsets[motor]
             sign = self.config.joint_signs[idx]
             ref_pos_rad = self.config.calibration_position[idx]
             angle_rad = sign * (action[motor] - offset) * self.RAD_PER_COUNT + ref_pos_rad
-            result[f"{motor}.pos"] = angle_rad
-        result["gripper.pos"] = (action["gripper"] - self.calibration.gripper_open_position) / (self.calibration.gripper_closed_position - self.calibration.gripper_open_position)
+            result[motor] = angle_rad
+        result["gripper"] = (action["gripper"] - self.calibration.gripper_open_position) / (self.calibration.gripper_closed_position - self.calibration.gripper_open_position)
 
         dt_ms = (time.perf_counter() - start) * 1e3
         logger.debug(f"{self} read action: {dt_ms:.1f}ms")

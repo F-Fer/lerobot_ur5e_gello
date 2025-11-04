@@ -59,7 +59,7 @@ def _patched_make_default_processors():
 
     def _patched():
         teleop_proc, robot_action_proc, robot_obs_proc = original_factory()
-        teleop_proc.steps.append(_RemapTeleopToUR5ActionStep(JOINT_MAPPING))
+        # teleop_proc.steps.append(_RemapTeleopToUR5ActionStep(JOINT_MAPPING))
         return teleop_proc, robot_action_proc, robot_obs_proc
 
     try:
