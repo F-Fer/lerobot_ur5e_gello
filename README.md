@@ -36,6 +36,13 @@ uv run scripts/record.py \
     --teleop.id=gello_teleop
 ```
 
+### Push to Hub
+```bash
+lerobot-edit-dataset \
+    --repo_id F-Fer/ur5e_gello_test_3 \
+    --push_to_hub=True
+```
+
 ## Todo
 
 - Inference with remote pi model
