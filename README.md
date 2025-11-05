@@ -43,8 +43,33 @@ lerobot-edit-dataset \
     --push_to_hub=True
 ```
 
+## Run Inference with $\pi0$ on Server
+
+1. Setup the server: 
+
+    Download the model on the server:
+    ```bash
+    cd /workspace
+    git pull
+    source .venv/bin/activate
+    huggingface-cli download F-Fer/pi0_ur5e_0 --include=25000/ --repo-type=model
+    ```
+
+    Start the policy server:
+    ```bash
+    uv run scripts/serve_policy.py policy:checkpoint --policy.config=pi0_ur5e --policy.dir=/workspace/.cache/huggingface/hub/models--F-Fer--pi0_ur5e_0/snapshots/1d0272087fefadca401469112aa54ce5bd9c3455/25000/
+    ```
+
+2. Run inference script:
+
+    Locally run:
+    ```bash
+    uv run scripts/remote_pi_inference.py --ip=<ip> --port=<port> --prompt=<prompts>
+    ```
+
 ## Todo
 
 - Inference with remote pi model
+    - Add rerun visualization to remote_pi_inference
 - Integrate pi_streamer for zmq streaming
 - Recording fails when video_encoding_batch_size > 1

@@ -5,11 +5,12 @@ readme = "README.md"
 requires-python = ">=3.11"
 
 dependencies = [
-    "lerobot",
+    "lerobot>=0.4.0",
     "lerobot-camera-zmq",
     "lerobot-robot-ur5e",
     "lerobot-teleoperator-gello",
-    "openpi",
+    "msgpack>=1.0.5",
+    "websockets>=11.0",
 ]
 
 [tool.setuptools.packages.find]
@@ -17,6 +18,7 @@ include = [
     "lerobot_camera_zmq",
     "lerobot_robot_ur5e",
     "lerobot_teleoperator_gello",
+    "openpi_client",
 ]
 
 [project.optional-dependencies]
@@ -30,4 +32,3 @@ dev = [
 lerobot-camera-zmq = { path = "lerobot_camera_zmq", editable = true }
 lerobot-robot-ur5e = { path = "lerobot_robot_ur5e", editable = true }
 lerobot-teleoperator-gello = { path = "lerobot_teleoperator_gello", editable = true }
-openpi-client = { git = "https://github.com/Physical-Intelligence/openpi.git" }
