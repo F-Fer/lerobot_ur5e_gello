@@ -29,6 +29,7 @@ class Gello(Teleoperator):
     config_class = GelloConfig
     name = "gello"
     RAD_PER_COUNT = 2 * np.pi / (4096 - 1)
+    JOINT_NAMES = ["joint_0", "joint_1", "joint_2", "joint_3", "joint_4", "joint_5"]
 
     def __init__(self, config: GelloConfig):
         super().__init__(config)
@@ -94,10 +95,9 @@ class Gello(Teleoperator):
         logger.info(f"\nRunning calibration of {self}")
 
         input(f"Move {self} to the home position and press ENTER....")
-        joint_motors = ["base", "shoulder", "elbow", "wrist_1", "wrist_2", "wrist_3"]
         start_joints = self.bus.sync_read("Present_Position", normalize=False)
         calibration = GelloCalibration(
-            joint_offsets={motor: start_joints[motor] for motor in joint_motors},
+            joint_offsets={motor: start_joints[motor] for motor in self.JOINT_NAMES},
             gripper_open_position=start_joints["gripper"],
             gripper_closed_position=start_joints["gripper"] - self.config.gripper_travel_counts,
         )
@@ -139,9 +139,8 @@ class Gello(Teleoperator):
         action = self.bus.sync_read("Present_Position", normalize=False)
 
         # Normalize joint positions to [-pi, pi] and gripper position to [0, 1]
-        joint_motors = ["joint_0", "joint_1", "joint_2", "joint_3", "joint_4", "joint_5"]
         result = {}
-        for idx, motor in enumerate(joint_motors):
+        for idx, motor in enumerate(self.JOINT_NAMES):
             offset = self.calibration.joint_offsets[motor]
             sign = self.config.joint_signs[idx]
             ref_pos_rad = self.config.calibration_position[idx]
