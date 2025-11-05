@@ -47,3 +47,4 @@ lerobot-edit-dataset \
 
 - Inference with remote pi model
 - Integrate pi_streamer for zmq streaming
+- Recording fails when video_encoding_batch_size > 1
