@@ -36,4 +36,7 @@ uv run scripts/record.py \
     --teleop.id=gello_teleop
 ```
 
+## Todo
 
+- Inference with remote pi model
+- Integrate pi_streamer for zmq streaming

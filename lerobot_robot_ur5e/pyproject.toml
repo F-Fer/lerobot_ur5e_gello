@@ -2,11 +2,11 @@
 name = "lerobot-robot-ur5e"
 version = "0.1.0"
 description = "A lerobot plugin for the UR5e robot with a Robotiq gripper."
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.12"
 
 # These are ONLY the dependencies needed for this specific robot
 dependencies = [
-    "lerobot>=0.4.0", 
+    "lerobot", 
     "ur-rtde>=1.6.2", 
 ]
 

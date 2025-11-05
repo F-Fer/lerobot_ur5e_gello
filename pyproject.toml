@@ -2,13 +2,14 @@
 name = "lerobot-ur5e-gello-dev-env"
 version = "0.1.0"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.12"
 
 dependencies = [
-    "lerobot>=0.4.0",
+    "lerobot",
     "lerobot-camera-zmq",
     "lerobot-robot-ur5e",
     "lerobot-teleoperator-gello",
+    "openpi",
 ]
 
 [tool.setuptools.packages.find]
@@ -29,3 +30,4 @@ dev = [
 lerobot-camera-zmq = { path = "lerobot_camera_zmq", editable = true }
 lerobot-robot-ur5e = { path = "lerobot_robot_ur5e", editable = true }
 lerobot-teleoperator-gello = { path = "lerobot_teleoperator_gello", editable = true }
+openpi-client = { git = "https://github.com/Physical-Intelligence/openpi.git" }
