@@ -1,0 +1,23 @@
+[project]
+name = "phosphobot-pi-streamer"
+version = "0.1.0"
+description = "ZMQ camera streaming agent for remote phosphobot cameras"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "opencv-python~=4.10.0",
+    "pyzmq~=26.0",
+    "numpy~=1.26",
+    "pydantic~=2.8",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black~=24.8",
+    "ruff~=0.6",
+]
+
+[tool.uv]
+index-url = "https://pypi.org/simple"
+
+

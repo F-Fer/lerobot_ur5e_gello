@@ -1,0 +1,30 @@
+{
+    "endpoint": "tcp://0.0.0.0:5555",
+    "jpeg_quality": 80,
+    "reconnect_interval": 3.0,
+    "encoding": "jpeg",
+    "cameras": [
+      {
+        "device": "/dev/v4l/by-id/usb-Technologies__Inc._ZED_2i_OV0001-video-index0",
+        "topic": "zed2i_left",
+        "width": 640,
+        "height": 480,
+        "fps": 30,
+        "fourcc": "MJPG",
+        "stereo": true,
+        "right_topic": "zed2i_right",
+        "only_send_left_image": false
+      },
+      {
+        "device": "/dev/v4l/by-id/usb-Technologies__Inc._ZED-M-video-index0",
+        "topic": "zedm_left",
+        "width": 640,
+        "height": 480,
+        "fps": 30,
+        "fourcc": "MJPG",
+        "stereo": true,
+        "right_topic": "zedm_right",
+        "only_send_left_image": false
+      }
+    ]
+  }
