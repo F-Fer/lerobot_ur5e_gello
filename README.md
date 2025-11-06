@@ -2,6 +2,8 @@
 
 LeRobot setup for UR5e + GELLO: install the custom plugins, calibrate the teleop, record datasets, and hook up remote OpenPI policies—everything managed with the provided `uv run` commands.
 
+![connection setup](./assets/images/connection-setup.png)
+
 ## Install Everything
 
 ```bash
@@ -75,5 +77,4 @@ lerobot-edit-dataset \
 
 - Inference with remote pi model
     - Add rerun visualization to remote_pi_inference
-- Integrate pi_streamer for zmq streaming
 - Recording fails when video_encoding_batch_size > 1
