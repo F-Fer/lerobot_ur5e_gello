@@ -91,7 +91,7 @@ def inference_loop(client: WebsocketClientPolicy, robot: Robot, events: dict, fp
             obs_dict = {
                 "observation/joint_position": [obs[f"joint_{i}"] for i in range(6)],
                 "observation/gripper_position": obs["gripper"],
-                "observation/prompt": prompt,
+                "prompt": prompt,
                 "observation/exterior_image_1_left": obs["zed2i_left"],
                 "observation/wrist_image_left": obs["zedm_left"],
                 "observation/wrist_image_right": obs["zedm_right"],
