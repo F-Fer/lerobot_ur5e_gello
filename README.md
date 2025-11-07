@@ -32,9 +32,9 @@ uv run scripts/calibrate_gello_teleop.py --port /dev/ttyUSB0 --id gello_teleop
 uv run scripts/record.py \
     --robot.type=ur5e \
     --robot.ip=192.168.1.10 \
-    --dataset.repo_id=F-Fer/ur5e_gello_test_1 \
-    --dataset.num_episodes=2 \
-    --dataset.single_task="Test..." \
+    --dataset.repo_id=F-Fer/ur_task1_0 \
+    --dataset.num_episodes=50 \
+    --dataset.single_task="Pick up the M8 bolt and insert it into the hole until fully inserted." \
     --dataset.push_to_hub=True \
     --display_data=true \
     --teleop.type=gello \
@@ -44,8 +44,17 @@ uv run scripts/record.py \
 
 ### Push to Hub
 ```bash
-lerobot-edit-dataset \
-    --repo_id F-Fer/ur5e_gello_test_3 \
+uv run lerobot-edit-dataset \
+    --repo_id=F-Fer/ur5e_gello_test_3 \
+    --push_to_hub=True
+```
+
+### Delete Episode and Push to Hub
+```bash
+uv run lerobot-edit-dataset \
+    --repo_id=F-Fer/ur_task1_0 \
+    --operation.type delete_episodes \
+    --operation.episode_indices "[0]" \
     --push_to_hub=True
 ```
 
