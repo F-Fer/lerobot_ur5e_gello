@@ -101,11 +101,11 @@ class DatasetRecordConfig:
     # set to ≥1 to use subprocesses, each using threads to write images. The best number of processes
     # and threads depends on your system. We recommend 4 threads per camera with 0 processes.
     # If fps is unstable, adjust the thread count. If still unstable, try using 1 or more subprocesses.
-    num_image_writer_processes: int = 4
+    num_image_writer_processes: int = 0
     # Number of threads writing the frames as png images on disk, per camera.
     # Too many threads might cause unstable teleoperation fps due to main thread being blocked.
     # Not enough threads might cause low camera fps.
-    num_image_writer_threads_per_camera: int = 4
+    num_image_writer_threads_per_camera: int = 8
     # Number of episodes to record before batch encoding videos
     # Set to 1 for immediate encoding (default behavior), or higher for batched encoding
     video_encoding_batch_size: int = 1
