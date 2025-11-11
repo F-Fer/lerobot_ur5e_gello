@@ -7,8 +7,8 @@
     {
       "device": "/dev/v4l/by-id/usb-Technologies__Inc._ZED-M-video-index0",
       "topic": "zedm_left",
-      "width": 1280,
-      "height": 720,
+      "width": 1920,
+      "height": 1080,
       "fps": 30,
       "fourcc": "MJPG",
       "stereo": true,
@@ -18,8 +18,8 @@
     {
       "device": "/dev/v4l/by-id/usb-Technologies__Inc._ZED_2i_OV0001-video-index0",
       "topic": "zed2i_left",
-      "width": 1280,
-      "height": 720,
+      "width": 1920,
+      "height": 1080,
       "fps": 30,
       "fourcc": "MJPG",
       "stereo": true,
