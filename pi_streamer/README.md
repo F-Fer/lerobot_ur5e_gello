@@ -48,40 +48,22 @@ Create `/etc/systemd/system/pi-streamer.service`:
 
 ```
 [Unit]
-Description=Phosphobot Pi Streamer
+Description=LeRobot Pi Streamer
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=simple
 User=pi
-WorkingDirectory=/home/pi/lerobot_ur5e/pi_streamer
-Environment="PATH=/home/pi/lerobot_ur5e/pi_streamer/.venv/bin:/usr/bin:/bin"
-ExecStart=/home/pi/lerobot_ur5e/pi_streamer/.venv/bin/python streamer.py --config config.json
+WorkingDirectory=/home/pi/lerobot_ur5e_gello/pi_streamer
+Environment="PATH=/home/pi/lerobot_ur5e_gello/pi_streamer/.venv/bin:/usr/bin:/bin"
+ExecStart=/home/pi/lerobot_ur5e_gello/pi_streamer/.venv/bin/python streamer.py --config config.json
 Restart=always
 RestartSec=3
 
 [Install]
 WantedBy=multi-user.target
 ```
-
-[Unit]
-Description=Phosphobot Pi Streamer
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-Type=simple
-User=pi
-WorkingDirectory=/home/pi/phosphobot-ur5e/pi_streamer
-Environment="PATH=/home/pi/phosphobot-ur5e/pi_streamer/.venv/bin:/usr/bin:/bin"
-ExecStart=/home/pi/phosphobot-ur5e/pi_streamer/.venv/bin/python streamer.py --config config.json
-Restart=always
-RestartSec=3
-
-[Install]
-WantedBy=multi-user.target
-
 
 Then enable and start:
 
