@@ -13,7 +13,7 @@ class UR5EConfig(RobotConfig):
             "zed2i_left": ZMQCameraConfig(
                 tcp_address="tcp://192.168.1.12:5555",
                 topic="zed2i_left",
-                fps=30,
+                fps=60,
                 width=672,
                 height=376,
                 color_mode=ColorMode.RGB,
@@ -22,7 +22,7 @@ class UR5EConfig(RobotConfig):
             "zed2i_right": ZMQCameraConfig(
                 tcp_address="tcp://192.168.1.12:5555",
                 topic="zed2i_right",
-                fps=30,
+                fps=60,
                 color_mode=ColorMode.RGB,
                 rotation=Cv2Rotation.NO_ROTATION,
                 width=672,
@@ -31,7 +31,7 @@ class UR5EConfig(RobotConfig):
             "zedm_left": ZMQCameraConfig(
                 tcp_address="tcp://192.168.1.12:5555",
                 topic="zedm_left",
-                fps=30,
+                fps=60,
                 color_mode=ColorMode.RGB,
                 rotation=Cv2Rotation.NO_ROTATION,
                 width=672,
@@ -40,7 +40,7 @@ class UR5EConfig(RobotConfig):
             "zedm_right": ZMQCameraConfig(
                 tcp_address="tcp://192.168.1.12:5555",
                 topic="zedm_right",
-                fps=30,
+                fps=60,
                 color_mode=ColorMode.RGB,
                 rotation=Cv2Rotation.NO_ROTATION,
                 width=672,

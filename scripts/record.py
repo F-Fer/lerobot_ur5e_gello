@@ -82,7 +82,7 @@ class DatasetRecordConfig:
     # Root directory where the dataset will be stored (e.g. 'dataset/path').
     root: str | Path | None = None
     # Limit the frames per second.
-    fps: int = 30
+    fps: int = 60
     # Number of seconds for data recording for each episode.
     episode_time_s: int | float = 60
     # Number of seconds for resetting the environment after each episode.
