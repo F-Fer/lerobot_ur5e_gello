@@ -32,14 +32,14 @@ uv run scripts/calibrate_gello_teleop.py --port /dev/ttyUSB0 --id gello_teleop
 uv run scripts/record.py \
     --robot.type=ur5e \
     --robot.ip=192.168.1.10 \
-    --dataset.repo_id=F-Fer/ur_task1_0 \
     --dataset.num_episodes=50 \
     --dataset.single_task="Pick up the M8 bolt and insert it into the hole until fully inserted." \
-    --dataset.push_to_hub=True \
+    --dataset.push_to_hub=False \
     --display_data=true \
     --teleop.type=gello \
     --teleop.port=/dev/ttyUSB0 \
-    --teleop.id=gello_teleop
+    --teleop.id=gello_teleop \
+    --dataset.repo_id=F-Fer/test_0005
 ```
 
 ### Push to Hub
