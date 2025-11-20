@@ -108,7 +108,7 @@ class DatasetRecordConfig:
     num_image_writer_threads_per_camera: int = 8
     # Number of episodes to record before batch encoding videos
     # Set to 1 for immediate encoding (default behavior), or higher for batched encoding
-    video_encoding_batch_size: int = 2
+    video_encoding_batch_size: int = 10
     # Rename map for the observation to override the image and state keys
     rename_map: dict[str, str] = field(default_factory=dict)
 
