@@ -2,8 +2,9 @@ import logging
 import json
 import time
 import numpy as np
+from threading import Thread, Event, Lock
 from dataclasses import dataclass
-from lerobot.motors import Motor, MotorCalibration, MotorNormMode
+from lerobot.motors import Motor, MotorNormMode
 from lerobot.motors.dynamixel import (
     DynamixelMotorsBus,
     OperatingMode,
@@ -48,6 +49,11 @@ class Gello(Teleoperator):
             }
         )
 
+        self.thread: Thread | None = None
+        self.stop_event: Event | None = None
+        self.lock: Lock = Lock()
+        self.latest_action: dict[str, float] | None = None
+
     @property
     def action_features(self) -> dict[str, type]:
         return {motor: float for motor in self.bus.motors}
@@ -76,6 +82,13 @@ class Gello(Teleoperator):
             self.calibrate()
 
         self.configure()
+
+        if self.config.use_async:
+            # Initial read to populate latest_action
+            raw_action = self.bus.sync_read("Present_Position", normalize=False)
+            self.latest_action = self._process_action(raw_action)
+            self._start_read_thread()
+
         logger.info(f"{self} connected.")
 
     @property
@@ -87,10 +100,10 @@ class Gello(Teleoperator):
         if self.calibration:
             # Calibration exists exists, ask user whether to use it or run new calibration
             user_input = input(
-                f"Press ENTER to use existing calibration, or type 'c' and press ENTER to run new calibration: "
+                "Press ENTER to use existing calibration, or type 'c' and press ENTER to run new calibration: "
             )
             if user_input.strip().lower() != "c":
-                logger.info(f"Using existing calibration")
+                logger.info("Using existing calibration")
                 return
         logger.info(f"\nRunning calibration of {self}")
 
@@ -131,26 +144,84 @@ class Gello(Teleoperator):
             self.bus.setup_motor(motor)
             print(f"'{motor}' motor id set to {self.bus.motors[motor].id}")
 
-    def get_action(self) -> dict[str, float]:
-        if not self.is_connected:
-            raise DeviceNotConnectedError(f"{self} is not connected.")
-
-        start = time.perf_counter()
-        action = self.bus.sync_read("Present_Position", normalize=False)
-
+    def _process_action(self, raw_action: dict[str, int]) -> dict[str, float]:
         # Normalize joint positions to [-pi, pi] and gripper position to [0, 1]
         result = {}
         for idx, motor in enumerate(self.JOINT_NAMES):
             offset = self.calibration.joint_offsets[motor]
             sign = self.config.joint_signs[idx]
             ref_pos_rad = self.config.calibration_position[idx]
-            angle_rad = sign * (action[motor] - offset) * self.RAD_PER_COUNT + ref_pos_rad
+            angle_rad = sign * (raw_action[motor] - offset) * self.RAD_PER_COUNT + ref_pos_rad
             result[motor] = angle_rad
-        result["gripper"] = (action["gripper"] - self.calibration.gripper_open_position) / (self.calibration.gripper_closed_position - self.calibration.gripper_open_position)
-
-        dt_ms = (time.perf_counter() - start) * 1e3
-        logger.debug(f"{self} read action: {dt_ms:.1f}ms")
+        result["gripper"] = (raw_action["gripper"] - self.calibration.gripper_open_position) / (self.calibration.gripper_closed_position - self.calibration.gripper_open_position)
         return result
+
+    def _read_loop(self) -> None:
+        if self.stop_event is None:
+            raise RuntimeError(f"{self}: stop_event is not initialized before starting read loop.")
+
+        while not self.stop_event.is_set():
+            try:
+                start = time.perf_counter()
+                raw_action = self.bus.sync_read("Present_Position", normalize=False)
+                new_action = self._process_action(raw_action)
+
+                with self.lock:
+                    if self.latest_action is None:
+                        self.latest_action = new_action
+                    else:
+                        # Apply EMA smoothing
+                        alpha = self.config.smoothing
+                        for k, v in new_action.items():
+                            self.latest_action[k] = alpha * v + (1 - alpha) * self.latest_action[k]
+
+            except Exception as e:
+                logger.warning(f"Error reading action in background thread for {self}: {e}")
+                # Prevent tight loop if error is persistent
+                time.sleep(0.1)
+
+    def _start_read_thread(self) -> None:
+        if self.thread is not None and self.thread.is_alive():
+            self.thread.join(timeout=0.1)
+        if self.stop_event is not None:
+            self.stop_event.set()
+
+        self.stop_event = Event()
+        self.thread = Thread(target=self._read_loop, args=(), name=f"{self}_read_loop")
+        self.thread.daemon = True
+        self.thread.start()
+
+    def _stop_read_thread(self) -> None:
+        if self.stop_event is not None:
+            self.stop_event.set()
+
+        if self.thread is not None and self.thread.is_alive():
+            self.thread.join(timeout=2.0)
+
+        self.thread = None
+        self.stop_event = None
+
+    def get_action(self) -> dict[str, float]:
+        if not self.is_connected:
+            raise DeviceNotConnectedError(f"{self} is not connected.")
+
+        if self.config.use_async:
+            with self.lock:
+                if self.latest_action is None:
+                    # If we haven't received data yet, perform a sync read
+                    logger.warning(f"{self} async read loop has not updated latest_action yet. Performing synchronous read.")
+                    raw_action = self.bus.sync_read("Present_Position", normalize=False)
+                    self.latest_action = self._process_action(raw_action)
+
+                return self.latest_action.copy()
+
+        else:
+            start = time.perf_counter()
+            raw_action = self.bus.sync_read("Present_Position", normalize=False)
+            result = self._process_action(raw_action)
+            dt_bus_read_s = time.perf_counter() - start
+            print(f"bus.sync_read took {dt_bus_read_s} seconds")
+            return result
 
     def send_feedback(self, feedback: dict[str, float]) -> None:
         # TODO(rcadene, aliberts): Implement force feedback
@@ -159,6 +230,9 @@ class Gello(Teleoperator):
     def disconnect(self) -> None:
         if not self.is_connected:
             raise DeviceNotConnectedError(f"{self} is not connected.")
+
+        if self.config.use_async:
+            self._stop_read_thread()
 
         self.bus.disconnect()
         logger.info(f"{self} disconnected.")

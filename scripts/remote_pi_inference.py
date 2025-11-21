@@ -2,7 +2,6 @@ import logging
 from collections import deque
 from dataclasses import asdict, dataclass, field
 from pprint import pformat
-from typing import List
 import numpy as np
 import time
 

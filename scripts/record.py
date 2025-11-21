@@ -309,7 +309,10 @@ def record_loop(
             log_rerun_data(observation=obs_processed, action=action_values)
 
         dt_s = time.perf_counter() - start_loop_t
-        busy_wait(1 / fps - dt_s)
+        if dt_s < 1 / fps:
+            busy_wait(1 / fps - dt_s)
+        else:
+            logging.warning(f"Loop took {dt_s} seconds, which is longer than the expected {1 / fps} seconds.")
 
         timestamp = time.perf_counter() - start_episode_t
 
