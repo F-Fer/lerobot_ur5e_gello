@@ -311,7 +311,8 @@ def record_loop(
         dt_s = time.perf_counter() - start_loop_t
         if dt_s < 1 / fps:
             busy_wait(1 / fps - dt_s)
-        else:
+        elif dt_s > 2.5 / fps:
+            # Only log a warning if the loop takes longer than 1.5x the expected time
             logging.warning(f"Loop took {dt_s} seconds, which is longer than the expected {1 / fps} seconds.")
 
         timestamp = time.perf_counter() - start_episode_t
