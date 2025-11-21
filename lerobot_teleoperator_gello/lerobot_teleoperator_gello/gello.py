@@ -176,7 +176,7 @@ class Gello(Teleoperator):
                             self.latest_action[k] = alpha * v + (1 - alpha) * self.latest_action[k]
 
             except Exception as e:
-                logger.warning(f"Error reading action in background thread for {self}: {e}")
+                # logger.warning(f"Error reading action in background thread for {self}: {e}")
                 # Prevent tight loop if error is persistent
                 time.sleep(0.1)
 

@@ -35,7 +35,6 @@ uv run scripts/record.py \
     --dataset.num_episodes=50 \
     --dataset.single_task="Pick up the M8 bolt and insert it into the hole until fully inserted." \
     --dataset.push_to_hub=False \
-    --display_data=true \
     --teleop.type=gello \
     --teleop.port=/dev/ttyUSB0 \
     --teleop.id=gello_teleop \

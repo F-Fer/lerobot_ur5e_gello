@@ -303,7 +303,7 @@ class ZMQCamera(Camera):
         self.thread = None
         self.stop_event = None
 
-    def async_read(self, timeout_ms: float = 200) -> NDArray[Any]:
+    def async_read(self, timeout_ms: float = 400) -> NDArray[Any]:
         """
         Reads the latest available frame asynchronously.
 
@@ -313,7 +313,7 @@ class ZMQCamera(Camera):
 
         Args:
             timeout_ms (float): Maximum time in milliseconds to wait for a frame
-                to become available. Defaults to 200ms (0.2 seconds).
+                to become available. Defaults to 400ms (0.4 seconds).
 
         Returns:
             np.ndarray: The latest captured frame as a NumPy array in the format
