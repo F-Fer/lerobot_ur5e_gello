@@ -88,6 +88,7 @@ class ZMQCamera(Camera):
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.SUB)
         self.socket.setsockopt(zmq.RCVTIMEO, 2000)
+        self.socket.setsockopt(zmq.LINGER, 0) # ensure socket closes immediately and releases resources
         self.socket.connect(self.tcp_address)
         self.socket.setsockopt_string(zmq.SUBSCRIBE, self.topic)
         self.stream_initialized = True

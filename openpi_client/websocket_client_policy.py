@@ -7,6 +7,7 @@
 import logging
 import time
 from typing import Dict, Optional, Tuple
+import ssl
 
 from typing_extensions import override
 import websockets.sync.client
@@ -22,7 +23,7 @@ class WebsocketClientPolicy(BasePolicy):
         if host.startswith("ws"):
             self._uri = host
         else:
-            self._uri = f"ws://{host}"
+            self._uri = f"wss://{host}"
         if port is not None:
             self._uri += f":{port}"
         self._packer = msgpack_numpy.Packer()
@@ -34,16 +35,27 @@ class WebsocketClientPolicy(BasePolicy):
 
     def _wait_for_server(self) -> Tuple[websockets.sync.client.ClientConnection, Dict]:
         logging.info("Waiting for server at %s...", self._uri)
+        ssl_context = ssl.create_default_context()
+        ssl_context.check_hostname = False
+        ssl_context.verify_mode = ssl.CERT_NONE
         while True:
             try:
                 headers = {"Authorization": f"Api-Key {self._api_key}"} if self._api_key else None
                 conn = websockets.sync.client.connect(
-                    self._uri, compression=None, max_size=None, additional_headers=headers
+                    self._uri,
+                    compression=None,
+                    max_size=None,
+                    additional_headers=headers,
+                    ping_interval=None,
+                    ssl=ssl_context,
                 )
                 metadata = msgpack_numpy.unpackb(conn.recv())
                 return conn, metadata
             except ConnectionRefusedError:
                 logging.info("Still waiting for server...")
+                time.sleep(5)
+            except ssl.SSLError as e:
+                logging.error(f"SSL Error: {e}")
                 time.sleep(5)
 
     @override
@@ -58,4 +70,8 @@ class WebsocketClientPolicy(BasePolicy):
     @override
     def reset(self) -> None:
         return None
+
+    def close(self) -> None:
+        if hasattr(self, "_ws") and self._ws:
+            self._ws.close()
 

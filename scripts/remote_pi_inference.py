@@ -25,7 +25,7 @@ class InferenceConfig:
     port: int
     prompt: str
     robot: RobotConfig = field(default_factory=lambda: UR5EConfig(ip="192.168.1.10"))
-    fps: int = 20
+    fps: int = 60
 
 def init_keyboard_listener():
     """
@@ -135,24 +135,35 @@ def run_inference(cfg: InferenceConfig):
     robot = make_robot_from_config(cfg.robot)
     robot.connect()
 
-    # Instantiate the client
+    client = None
+    listener = None
+
     try:
+        # Instantiate the client
         client = WebsocketClientPolicy(
             host=cfg.ip,
             port=cfg.port,
             api_key=None,
         )
+
+        listener, events = init_keyboard_listener()
+
+        inference_loop(client, robot, events, cfg.fps, cfg.prompt)
+
+    except KeyboardInterrupt:
+        logger.info("Inference stopped by user.")
     except Exception as e:
-        logger.error(f"Error instantiating the client: {e}")
+        logger.error(f"Error during inference: {e}")
         raise e
+    finally:
+        if client:
+            logger.info("Closing client connection...")
+            client.close()
 
-    listener, events = init_keyboard_listener()
-
-    inference_loop(client, robot, events, cfg.fps, cfg.prompt)
-
-    robot.disconnect()
-    if not is_headless() and listener is not None:
-        listener.stop()
+        logger.info("Disconnecting robot...")
+        robot.disconnect()
+        if not is_headless() and listener is not None:
+            listener.stop()
 
 def main():
     register_third_party_devices()
