@@ -69,12 +69,6 @@ def init_keyboard_listener():
 
     return listener, events
 
-def remap_observation_keys(obs: dict) -> dict:
-    return {
-        "observation/joint_position": obs["joint_position"],
-        "observation/gripper_position": obs["gripper_position"],
-        "observation/prompt": obs["prompt"]
-    }
 
 def inference_loop(client: WebsocketClientPolicy, robot: Robot, events: dict, fps: int, prompt: str):
     action_queue = deque([])
