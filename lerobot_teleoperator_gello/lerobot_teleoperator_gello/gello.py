@@ -162,7 +162,6 @@ class Gello(Teleoperator):
 
         while not self.stop_event.is_set():
             try:
-                start = time.perf_counter()
                 raw_action = self.bus.sync_read("Present_Position", normalize=False)
                 new_action = self._process_action(raw_action)
 
@@ -175,9 +174,7 @@ class Gello(Teleoperator):
                         for k, v in new_action.items():
                             self.latest_action[k] = alpha * v + (1 - alpha) * self.latest_action[k]
 
-            except Exception as e:
-                # logger.warning(f"Error reading action in background thread for {self}: {e}")
-                # Prevent tight loop if error is persistent
+            except Exception:
                 time.sleep(0.1)
 
     def _start_read_thread(self) -> None:

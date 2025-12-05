@@ -30,7 +30,7 @@ dev = [
 ]
 
 [tool.uv.sources]
-lerobot =  { path = "/home/finn/dev/lerobot_fix_batch_encoding", editable = true } # { git = "https://github.com/F-Fer/lerobot_fix_batch_encoding", rev = "fix/video-batch-encoding" }
+lerobot =  { git = "https://github.com/F-Fer/lerobot_fix_batch_encoding", rev = "fix/video-batch-encoding" }
 lerobot-camera-zmq = { path = "lerobot_camera_zmq", editable = true }
 lerobot-robot-ur5e = { path = "lerobot_robot_ur5e", editable = true }
 lerobot-teleoperator-gello = { path = "lerobot_teleoperator_gello", editable = true }
