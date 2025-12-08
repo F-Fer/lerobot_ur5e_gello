@@ -24,7 +24,9 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class EvalConfig:
-    task: str # e.g. "task1-lora" or "tasks-merged"
+    task: str # e.g. "task1"
+    model_type: str # e.g. "lora" or "fpft"
+    total_steps: int
     timeout: int = 60 # Seconds before rollout counts as failed
     home_pose: list[float] = field(default_factory=lambda: [0, -1.57, 1.57, -1.57, -1.57, -1.57]) # Position to return to after each rollout
     num_rollouts: int = 20
@@ -40,8 +42,12 @@ class InferenceConfig:
 
 @dataclass
 class RolloutResult:
+    timestamp: str
     success: bool
     duration: float
+    steps_completed: int
+    total_steps: int
+    score: float
 
     def to_dict(self):
         return asdict(self)
@@ -58,7 +64,7 @@ def try_load_rollout_results_from_file(eval_config: EvalConfig) -> list[RolloutR
     return []
 
 def save_rollout_results_to_file(eval_config: EvalConfig, rollout_results: list[RolloutResult]):
-    results_file = f"rollout_results_{eval_config.task}.json"
+    results_file = f"rollout_results_{eval_config.task}_{eval_config.model_type}.json"
     with open(results_file, "w") as f:
         json.dump([r.to_dict() for r in rollout_results], f, indent=2)
 
@@ -118,18 +124,29 @@ def init_keyboard_listener():
 
     return listener, events
 
-def move_to_home(robot: Robot, home_pose: list[float]):
+def move_to_home(robot: Robot, home_pose: list[float], duration: float = 3.0, fps: int = 60):
     logger.info("Moving to home pose...")
-    robot.send_action({
-        "joint_0": home_pose[0],
-        "joint_1": home_pose[1],
-        "joint_2": home_pose[2],
-        "joint_3": home_pose[3],
-        "joint_4": home_pose[4],
-        "joint_5": home_pose[5],
-        "gripper": 0,
-    })
-    time.sleep(1.0)
+    
+    # Get current state
+    obs = robot.get_observation()
+    current_joints = np.array([obs[f"joint_{i}"] for i in range(6)])
+    target_joints = np.array(home_pose)
+    
+    # Calculate steps
+    steps = int(duration * fps)
+    
+    for i in range(steps):
+        # Linear interpolation (LERP)
+        alpha = (i + 1) / steps
+        interpolated_joints = current_joints + alpha * (target_joints - current_joints)
+        
+        action_dict = {f"joint_{j}": interpolated_joints[j] for j in range(6)}
+        action_dict["gripper"] = 0 # Keep gripper open/neutral
+        
+        robot.send_action(action_dict)
+        busy_wait(1 / fps)
+        
+    time.sleep(0.5) # Settle time
 
 
 def evaluation_loop(client: WebsocketClientPolicy, robot: Robot, events: dict, inference_config: InferenceConfig):
@@ -262,9 +279,27 @@ def evaluation_loop(client: WebsocketClientPolicy, robot: Robot, events: dict, i
              # Retry requested
              events["rerecord_rollout"] = False
              continue 
+
+        # Wait for user to input the number of completed steps
+        total_steps = eval_config.total_steps
+        steps_completed = 0
+        for step in range(1, total_steps + 1):
+            response = input(f"Did it pass step '{step}'? (y/n): ")
+            if response.lower() == 'y':
+                steps_completed += 1
+            else:
+                break
+        score = steps_completed / total_steps
              
         # Save Result
-        res = RolloutResult(success=rollout_success, duration=robot_active_time)
+        res = RolloutResult(
+            timestamp=time.time(),
+            success=rollout_success,
+            duration=robot_active_time,
+            steps_completed=steps_completed,
+            total_steps=total_steps,
+            score=score,
+        )
         rollout_results.append(res)
         save_rollout_results_to_file(eval_config, rollout_results)
         
