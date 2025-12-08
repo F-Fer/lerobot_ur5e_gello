@@ -6,6 +6,8 @@ import numpy as np
 import time
 import os
 import json
+import sys
+import termios
 
 from lerobot.robots import RobotConfig, make_robot_from_config, Robot
 from lerobot.configs import parser
@@ -27,7 +29,7 @@ class EvalConfig:
     task: str # e.g. "task1"
     model_type: str # e.g. "lora" or "fpft"
     total_steps: int
-    timeout: int = 60 # Seconds before rollout counts as failed
+    timeout: int = 120 # Seconds before rollout counts as failed
     home_pose: list[float] = field(default_factory=lambda: [0, -1.57, 1.57, -1.57, -1.57, -1.57]) # Position to return to after each rollout
     num_rollouts: int = 20
 
@@ -36,9 +38,9 @@ class InferenceConfig:
     ip: str
     port: int
     prompt: str
+    eval: EvalConfig
     robot: RobotConfig = field(default_factory=lambda: UR5EConfig(ip="192.168.1.10"))
     fps: int = 60
-    eval: EvalConfig
 
 @dataclass
 class RolloutResult:
@@ -53,7 +55,7 @@ class RolloutResult:
         return asdict(self)
 
 def try_load_rollout_results_from_file(eval_config: EvalConfig) -> list[RolloutResult]:
-    results_file = f"rollout_results_{eval_config.task}.json"
+    results_file = f"assets/rollouts/rollout_results_{eval_config.task}_{eval_config.model_type}.json"
     if os.path.exists(results_file):
         with open(results_file, "r") as f:
             try:
@@ -64,10 +66,17 @@ def try_load_rollout_results_from_file(eval_config: EvalConfig) -> list[RolloutR
     return []
 
 def save_rollout_results_to_file(eval_config: EvalConfig, rollout_results: list[RolloutResult]):
-    results_file = f"rollout_results_{eval_config.task}_{eval_config.model_type}.json"
+    results_file = f"assets/rollouts/rollout_results_{eval_config.task}_{eval_config.model_type}.json"
+    os.makedirs(os.path.dirname(results_file), exist_ok=True)
     with open(results_file, "w") as f:
         json.dump([r.to_dict() for r in rollout_results], f, indent=2)
 
+def flush_stdin():
+    """Flushes the standard input buffer to remove stray keypresses."""
+    try:
+        termios.tcflush(sys.stdin, termios.TCIOFLUSH)
+    except Exception:
+        pass
 
 def init_keyboard_listener():
     """
@@ -154,6 +163,7 @@ def evaluation_loop(client: WebsocketClientPolicy, robot: Robot, events: dict, i
     fps = inference_config.fps
     
     rollout_results = try_load_rollout_results_from_file(eval_config)
+    logger.info(f"Loaded {len(rollout_results)} rollout results from file.")
     
     # Ensure we continue from where we left off
     while len(rollout_results) < eval_config.num_rollouts:
@@ -278,32 +288,39 @@ def evaluation_loop(client: WebsocketClientPolicy, robot: Robot, events: dict, i
         if rollout_success is None:
              # Retry requested
              events["rerecord_rollout"] = False
-             continue 
-
-        # Wait for user to input the number of completed steps
-        total_steps = eval_config.total_steps
-        steps_completed = 0
-        for step in range(1, total_steps + 1):
-            response = input(f"Did it pass step '{step}'? (y/n): ")
-            if response.lower() == 'y':
-                steps_completed += 1
+        else: 
+            total_steps = eval_config.total_steps
+            if not rollout_success:
+                # Flush stdin before asking for input to clear any buffered keypresses (like arrow keys)
+                flush_stdin()
+                
+                # Wait for user to input the number of completed steps
+                steps_completed = 0
+                while steps_completed < total_steps - 1: # We know that the last step must be unsuccessful
+                    response = input(f"Did it pass step '{steps_completed + 1}'? (y/n): ").strip()
+                    if response.lower() != 'n':
+                        steps_completed += 1
+                    else:
+                        break
+                score = steps_completed / total_steps
             else:
-                break
-        score = steps_completed / total_steps
-             
-        # Save Result
-        res = RolloutResult(
-            timestamp=time.time(),
-            success=rollout_success,
-            duration=robot_active_time,
-            steps_completed=steps_completed,
-            total_steps=total_steps,
-            score=score,
-        )
-        rollout_results.append(res)
-        save_rollout_results_to_file(eval_config, rollout_results)
-        
-        logger.info(f"Rollout {rollout_idx + 1} Result: Success={rollout_success}, Time={robot_active_time:.3f}s")
+                # Success -> full score
+                score = 1.0
+                steps_completed = total_steps
+                
+            # Save Result
+            res = RolloutResult(
+                timestamp=time.time(),
+                success=rollout_success,
+                duration=robot_active_time,
+                steps_completed=steps_completed,
+                total_steps=total_steps,
+                score=score,
+            )
+            rollout_results.append(res)
+            save_rollout_results_to_file(eval_config, rollout_results)
+            
+            logger.info(f"Rollout {rollout_idx + 1} Result: Success={rollout_success}, Time={robot_active_time:.3f}s")
         
         # Inter-rollout Wait
         logger.info("Waiting for user input to proceed to next rollout...")
@@ -314,7 +331,7 @@ def evaluation_loop(client: WebsocketClientPolicy, robot: Robot, events: dict, i
         # Reset events before waiting
         for k in events: events[k] = False
         
-        robot.move_to_home()
+        move_to_home(robot, eval_config.home_pose)
         while True:
             if events["next_rollout"]:
                 break # Go to outer loop
