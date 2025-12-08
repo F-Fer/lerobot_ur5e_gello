@@ -164,6 +164,8 @@ def evaluation_loop(client: WebsocketClientPolicy, robot: Robot, events: dict, i
     
     rollout_results = try_load_rollout_results_from_file(eval_config)
     logger.info(f"Loaded {len(rollout_results)} rollout results from file.")
+
+    move_to_home(robot, eval_config.home_pose)
     
     # Ensure we continue from where we left off
     while len(rollout_results) < eval_config.num_rollouts:
@@ -173,8 +175,6 @@ def evaluation_loop(client: WebsocketClientPolicy, robot: Robot, events: dict, i
         # Reset events
         for k in events:
             events[k] = False
-            
-        move_to_home(robot, eval_config.home_pose)
         
         logger.info("Rollout started. Press UP for Success, DOWN for Failure, LEFT to Retry, RIGHT to Skip/Next.")
         
@@ -322,6 +322,9 @@ def evaluation_loop(client: WebsocketClientPolicy, robot: Robot, events: dict, i
             
             logger.info(f"Rollout {rollout_idx + 1} Result: Success={rollout_success}, Time={robot_active_time:.3f}s")
         
+        # Move to home and wait for user input
+        move_to_home(robot, eval_config.home_pose)
+
         # Inter-rollout Wait
         logger.info("Waiting for user input to proceed to next rollout...")
         logger.info("  [RIGHT ARROW] -> Next Rollout")
@@ -331,7 +334,6 @@ def evaluation_loop(client: WebsocketClientPolicy, robot: Robot, events: dict, i
         # Reset events before waiting
         for k in events: events[k] = False
         
-        move_to_home(robot, eval_config.home_pose)
         while True:
             if events["next_rollout"]:
                 break # Go to outer loop
