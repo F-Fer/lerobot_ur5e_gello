@@ -4,4 +4,3 @@
 *.egg-info
 *.venv
 */build
-/assets/rollouts/rollout_results_*.json

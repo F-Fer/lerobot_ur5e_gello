@@ -1,0 +1,162 @@
+[
+  {
+    "timestamp": 1765201662.881858,
+    "success": false,
+    "duration": 22.708277769019332,
+    "steps_completed": 2,
+    "total_steps": 3,
+    "score": 0.6666666666666666
+  },
+  {
+    "timestamp": 1765201703.8467422,
+    "success": false,
+    "duration": 17.245308378955087,
+    "steps_completed": 2,
+    "total_steps": 3,
+    "score": 0.6666666666666666
+  },
+  {
+    "timestamp": 1765201752.3803823,
+    "success": true,
+    "duration": 20.431485551947844,
+    "steps_completed": 3,
+    "total_steps": 3,
+    "score": 1.0
+  },
+  {
+    "timestamp": 1765201805.714195,
+    "success": true,
+    "duration": 23.165948958885565,
+    "steps_completed": 3,
+    "total_steps": 3,
+    "score": 1.0
+  },
+  {
+    "timestamp": 1765201863.7287285,
+    "success": true,
+    "duration": 25.31739666802605,
+    "steps_completed": 3,
+    "total_steps": 3,
+    "score": 1.0
+  },
+  {
+    "timestamp": 1765201906.2230446,
+    "success": true,
+    "duration": 18.743316102976678,
+    "steps_completed": 3,
+    "total_steps": 3,
+    "score": 1.0
+  },
+  {
+    "timestamp": 1765201942.1140275,
+    "success": true,
+    "duration": 15.265031845978228,
+    "steps_completed": 3,
+    "total_steps": 3,
+    "score": 1.0
+  },
+  {
+    "timestamp": 1765201998.2891512,
+    "success": false,
+    "duration": 19.67993877797926,
+    "steps_completed": 2,
+    "total_steps": 3,
+    "score": 0.6666666666666666
+  },
+  {
+    "timestamp": 1765202047.6514466,
+    "success": true,
+    "duration": 15.285245631901489,
+    "steps_completed": 3,
+    "total_steps": 3,
+    "score": 1.0
+  },
+  {
+    "timestamp": 1765202105.2547104,
+    "success": true,
+    "duration": 21.498434770968743,
+    "steps_completed": 3,
+    "total_steps": 3,
+    "score": 1.0
+  },
+  {
+    "timestamp": 1765202180.7078543,
+    "success": false,
+    "duration": 24.376190586099256,
+    "steps_completed": 2,
+    "total_steps": 3,
+    "score": 0.6666666666666666
+  },
+  {
+    "timestamp": 1765202231.1732283,
+    "success": false,
+    "duration": 17.264247359020374,
+    "steps_completed": 2,
+    "total_steps": 3,
+    "score": 0.6666666666666666
+  },
+  {
+    "timestamp": 1765202300.2814243,
+    "success": false,
+    "duration": 20.23111945297933,
+    "steps_completed": 2,
+    "total_steps": 3,
+    "score": 0.6666666666666666
+  },
+  {
+    "timestamp": 1765202395.6566045,
+    "success": true,
+    "duration": 20.272408288041333,
+    "steps_completed": 3,
+    "total_steps": 3,
+    "score": 1.0
+  },
+  {
+    "timestamp": 1765202455.3871574,
+    "success": true,
+    "duration": 18.779270013037603,
+    "steps_completed": 3,
+    "total_steps": 3,
+    "score": 1.0
+  },
+  {
+    "timestamp": 1765202523.4652464,
+    "success": false,
+    "duration": 17.729723281045153,
+    "steps_completed": 2,
+    "total_steps": 3,
+    "score": 0.6666666666666666
+  },
+  {
+    "timestamp": 1765202582.036357,
+    "success": true,
+    "duration": 23.663796503031335,
+    "steps_completed": 3,
+    "total_steps": 3,
+    "score": 1.0
+  },
+  {
+    "timestamp": 1765202649.669177,
+    "success": false,
+    "duration": 21.22364423698309,
+    "steps_completed": 2,
+    "total_steps": 3,
+    "score": 0.6666666666666666
+  },
+  {
+    "timestamp": 1765202709.49491,
+    "success": false,
+    "duration": 23.74165321196415,
+    "steps_completed": 2,
+    "total_steps": 3,
+    "score": 0.6666666666666666
+  },
+  {
+    "timestamp": 1765202778.421482,
+    "success": false,
+    "duration": 23.249069826953928,
+    "steps_completed": 0,
+    "total_steps": 3,
+    "score": 0.0
+  }
+]
