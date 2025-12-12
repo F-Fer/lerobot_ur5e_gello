@@ -10,6 +10,7 @@ dependencies = [
     "lerobot-camera-zmq",
     "lerobot-robot-ur5e",
     "lerobot-teleoperator-gello",
+    "matplotlib>=3.10.8",
     "msgpack>=1.0.5",
     "websockets>=11.0",
 ]
