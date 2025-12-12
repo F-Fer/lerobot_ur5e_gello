@@ -83,7 +83,7 @@ uv run lerobot-edit-dataset \
 
     Or run eval script:
     ```bash
-    uv run scripts/eval.py --ip=<ip> --port=<port> --prompt="Pick up the M10 bolt and insert it into the hole until fully seated." --eval.task="task1" --model_type=fpft --total_steps=3
+    uv run scripts/eval.py --ip=<ip> --port=<port> --prompt="Pick up the M10 bolt and insert it into the hole until fully seated." --eval.task="task1" --eval.model_type=fpft --eval.total_steps=3
     ```
 
 ## Todo
