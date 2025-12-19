@@ -2,7 +2,7 @@
 
 A [LeRobot](https://github.com/huggingface/lerobot) plugin for the GELLO teleoperation device.
 
-GELLO is a general, low-cost, and intuitive teleoperation framework for robot manipulators, originally developed by [Phillip Wu](https://wuphilipp.github.io/gello_site/).
+GELLO is a general, low-cost, and intuitive teleoperation framework for robot manipulators, originally developed by [Philipp Wu et al.](https://wuphilipp.github.io/gello_site/).
 
 ## Overview
 
