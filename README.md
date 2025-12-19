@@ -1,8 +1,8 @@
 # LeRobot UR5e/Gello 
 
-LeRobot setup for UR5e + GELLO: install the custom plugins, calibrate the teleop, record datasets, and hook up remote OpenPI policies—everything managed with the provided `uv run` commands.
-
 ![Thumbnail](./assets/images/thumbnail.png)
+
+LeRobot setup for UR5e + GELLO: install the custom plugins, calibrate the teleop, record datasets, and hook up remote OpenPI policies—everything managed with the provided `uv run` commands.
 
 ## Install Everything
 
