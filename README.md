@@ -10,10 +10,6 @@ LeRobot setup for UR5e + GELLO: install the custom plugins, calibrate the teleop
 uv pip install lerobot -e ./lerobot_camera_zmq -e ./lerobot_robot_ur5e -e ./lerobot_teleoperator_gello
 ```
 
-```bash
-uv run --refresh python -m pip install lerobot -e ./lerobot_camera_zmq -e ./lerobot_robot_ur5e -e ./lerobot_teleoperator_gello
-```
-
 ## Calibrate GELLO Teleop
 
 1. Find Port
@@ -41,13 +37,6 @@ uv run scripts/record.py \
     --dataset.repo_id=F-Fer/test_0005
 ```
 
-### Push to Hub
-```bash
-uv run lerobot-edit-dataset \
-    --repo_id=F-Fer/ur5e_gello_test_3 \
-    --push_to_hub=True
-```
-
 ### Delete Episode and Push to Hub
 ```bash
 uv run lerobot-edit-dataset \
@@ -60,6 +49,8 @@ uv run lerobot-edit-dataset \
 ## Run Inference with $\pi0$ on Server
 
 1. Setup the server: 
+
+    The corresponding server code can be found under: [Openpi-UR5e](https://github.com/F-Fer/openpi-ur5e)
 
     Download the model on the server:
     ```bash
@@ -85,9 +76,3 @@ uv run lerobot-edit-dataset \
     ```bash
     uv run scripts/eval.py --ip=<ip> --port=<port> --prompt="Pick up the M10 bolt and insert it into the hole until fully seated." --eval.task="task1" --eval.model_type=fpft --eval.total_steps=3
     ```
-
-## Todo
-
-- Inference with remote pi model
-    - Add rerun visualization to remote_pi_inference
-- Recording fails when video_encoding_batch_size > 1
