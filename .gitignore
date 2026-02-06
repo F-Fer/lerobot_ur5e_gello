@@ -1,7 +1,27 @@
-*_pycache*
-*.pyc
-*.pyo
-*.egg-info
-*.venv
-*/build
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Project-specific
 CLAUDE.md
