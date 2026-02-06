@@ -1,3 +1,9 @@
+"""GELLO teleoperator interface using Dynamixel motors.
+
+Implements the LeRobot Teleoperator interface for the GELLO 7-DOF leader device.
+Reads joint positions from Dynamixel servos and applies calibration offsets.
+"""
+
 import logging
 import json
 import time

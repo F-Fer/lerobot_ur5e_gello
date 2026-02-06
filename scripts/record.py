@@ -1,3 +1,10 @@
+"""Dataset recording script for robot teleoperation.
+
+Collects demonstration data by recording robot observations and actions during
+teleoperation sessions. Supports optional policy-assisted recording where a
+pretrained model suggests actions that can be accepted or overridden.
+"""
+
 import logging
 import time
 from dataclasses import asdict, dataclass, field

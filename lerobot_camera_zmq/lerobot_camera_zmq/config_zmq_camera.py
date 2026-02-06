@@ -1,3 +1,9 @@
+"""Configuration dataclass for the ZMQ camera plugin.
+
+Defines ZMQCameraConfig with TCP address, topic, and image format settings
+for receiving frames from remote ZMQ camera streamers.
+"""
+
 from dataclasses import dataclass
 from lerobot.cameras.configs import CameraConfig, ColorMode, Cv2Rotation
 

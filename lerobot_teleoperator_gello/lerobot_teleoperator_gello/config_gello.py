@@ -1,3 +1,9 @@
+"""Configuration dataclass for the GELLO teleoperator plugin.
+
+Defines GelloConfig with serial port settings, calibration position, joint signs,
+and optional smoothing/async parameters.
+"""
+
 from dataclasses import dataclass, field
 
 from lerobot.teleoperators.config import TeleoperatorConfig

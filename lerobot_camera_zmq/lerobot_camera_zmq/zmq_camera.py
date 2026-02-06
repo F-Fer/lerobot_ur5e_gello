@@ -1,3 +1,9 @@
+"""ZMQ camera client for receiving streamed frames.
+
+Implements the LeRobot Camera interface for ZMQ-based image streams. Subscribes
+to a ZMQ PUB/SUB topic and decodes JPEG frames in a background thread.
+"""
+
 import zmq
 from typing import Optional, Any
 import base64

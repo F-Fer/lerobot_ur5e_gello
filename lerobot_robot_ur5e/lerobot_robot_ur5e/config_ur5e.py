@@ -1,3 +1,9 @@
+"""Configuration dataclass for the UR5e robot plugin.
+
+Defines UR5EConfig with robot IP and default camera setup for ZMQ-streamed
+stereo cameras (ZED2i and ZEDm).
+"""
+
 from dataclasses import dataclass, field
 from lerobot.cameras.configs import ColorMode, Cv2Rotation
 from lerobot.cameras import CameraConfig

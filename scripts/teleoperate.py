@@ -1,3 +1,9 @@
+"""Direct teleoperation script for UR5e with GELLO.
+
+Provides a simple control loop that reads GELLO teleoperator state and sends
+corresponding joint commands to the UR5e robot arm.
+"""
+
 from __future__ import annotations
 
 import logging

@@ -1,3 +1,9 @@
+"""Remote policy inference script for π0 models.
+
+Connects to a remote OpenPI policy server via WebSocket and executes inferred
+actions on the robot in real-time.
+"""
+
 import logging
 from collections import deque
 from dataclasses import asdict, dataclass, field

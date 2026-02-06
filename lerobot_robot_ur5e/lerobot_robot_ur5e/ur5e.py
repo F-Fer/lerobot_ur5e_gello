@@ -1,3 +1,9 @@
+"""UR5e robot interface using RTDE protocol.
+
+Implements the LeRobot Robot interface for Universal Robots UR5e arms with
+Robotiq gripper support. Uses servoJ for smooth real-time joint control.
+"""
+
 from typing import Optional, Any
 from lerobot.cameras import make_cameras_from_configs
 from lerobot.robots import Robot

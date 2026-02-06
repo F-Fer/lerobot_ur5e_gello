@@ -1,3 +1,9 @@
+"""GELLO teleoperator calibration utility.
+
+Runs the LeRobot calibration routine for the GELLO device, storing joint offsets
+and gripper range to enable accurate teleoperation.
+"""
+
 import argparse
 from pathlib import Path
 

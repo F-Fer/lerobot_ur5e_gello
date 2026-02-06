@@ -1,3 +1,9 @@
+"""Policy evaluation script with rollout tracking.
+
+Runs a trained policy on the robot for multiple rollouts, collecting success/failure
+metrics and timing data. Results are saved to JSON for analysis.
+"""
+
 import logging
 from collections import deque
 from dataclasses import asdict, dataclass, field
