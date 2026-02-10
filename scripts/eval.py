@@ -35,9 +35,9 @@ class EvalConfig:
     task: str # e.g. "task1"
     model_type: str # e.g. "lora" or "fpft"
     total_steps: int
-    timeout: int = 120 # Seconds before rollout counts as failed
+    timeout: int = 90 # Seconds before rollout counts as failed
     home_pose: list[float] = field(default_factory=lambda: [0, -1.57, 1.57, -1.57, -1.57, -1.57]) # Position to return to after each rollout
-    num_rollouts: int = 20
+    num_rollouts: int = 5
 
 @dataclass
 class InferenceConfig:
