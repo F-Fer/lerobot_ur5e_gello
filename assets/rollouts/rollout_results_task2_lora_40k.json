@@ -1,0 +1,42 @@
+[
+  {
+    "timestamp": 1770817747.3763034,
+    "success": false,
+    "duration": 21.02489157499076,
+    "steps_completed": 2,
+    "total_steps": 4,
+    "score": 0.5
+  },
+  {
+    "timestamp": 1770817819.7384963,
+    "success": false,
+    "duration": 20.854324550004094,
+    "steps_completed": 2,
+    "total_steps": 4,
+    "score": 0.5
+  },
+  {
+    "timestamp": 1770817886.5851774,
+    "success": true,
+    "duration": 30.25639426795351,
+    "steps_completed": 4,
+    "total_steps": 4,
+    "score": 1.0
+  },
+  {
+    "timestamp": 1770817943.1428182,
+    "success": false,
+    "duration": 17.25551947098029,
+    "steps_completed": 2,
+    "total_steps": 4,
+    "score": 0.5
+  },
+  {
+    "timestamp": 1770817993.1052856,
+    "success": false,
+    "duration": 20.7376945089909,
+    "steps_completed": 2,
+    "total_steps": 4,
+    "score": 0.5
+  }
+]
