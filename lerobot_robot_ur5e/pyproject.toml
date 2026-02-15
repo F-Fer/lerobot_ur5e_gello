@@ -1,5 +1,5 @@
 [project]
-name = "lerobot-robot-ur5e"
+name = "lerobot_robot_ur5e"
 version = "0.1.0"
 description = "A lerobot plugin for the UR5e robot with a Robotiq gripper."
 requires-python = ">=3.11"
