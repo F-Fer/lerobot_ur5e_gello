@@ -1,5 +1,5 @@
 [project]
-name = "lerobot-camera-zmq"
+name = "lerobot_camera_zmq"
 version = "0.1.0"
 description = "A lerobot plugin for zmq cameras."
 requires-python = ">=3.11"
