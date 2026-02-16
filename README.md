@@ -1,6 +1,6 @@
 # LeRobot UR5e/Gello
 
-![Thumbnail](./assets/images/thumbnail.png)
+![Thumbnail](./assets/images/banner.png)
 
 A ready-to-use [LeRobot](https://github.com/huggingface/lerobot) integration for the **UR5e** with the **GELLO** teleoperation device. Collect demonstration datasets, train VLA policies, and deploy them on real hardware through LeRobot's plugin system.
 
